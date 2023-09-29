@@ -1,0 +1,7 @@
+##主配置文件
+spring:
+  application:
+    name: service-system
+  profiles:
+    #指定 application-dev.yaml为激活的配置文件
+    active: dev
