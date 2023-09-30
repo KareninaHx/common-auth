@@ -1,11 +1,14 @@
 package org.example.system;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.example.model.system.SysRole;
 import org.example.system.mapper.SysRoleMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -54,6 +57,47 @@ public class SysRoleMapperTest {
         //根据id 修改信息
         int result = sysRoleMapper.updateById(sysRole);
         System.out.println(result);
+    }
 
+//    测试删除
+//    根据id删除
+    @Test
+    public void testDeleteById(){
+        int result = sysRoleMapper.deleteById("2");
+        System.out.println("影响的行数:"+result);
+    }
+
+//    测试批量删除
+    @Test
+    public void testDeleteBatch(){
+        int result = sysRoleMapper.deleteBatchIds(Arrays.asList("2","8"));
+        System.out.println("受影响行数:"+result);
+    }
+
+//    条件构造器 queryWrapper 测试  [查询]
+    @Test
+    public void testQueryWrapper(){
+        //创建 条件构造器对象
+        QueryWrapper<SysRole> roleQueryWrapper = new QueryWrapper<>();
+        //传入字段 通过条件构造器独享生成一个sql
+        // 左边为字段，右边为字段的属性值
+        roleQueryWrapper.ge("role_code","role");
+    //    获取数据
+        List<SysRole> roles = sysRoleMapper.selectList(roleQueryWrapper);
+        System.out.println(roles);
+    }
+
+    //条件构造器 UpdateWrapper 测试  [更新]
+    @Test
+    //sql语句存疑
+    public void testUpdateWrapper(){
+        //创建 条件构造器
+        UpdateWrapper<SysRole> roleUpdateWrapper = new UpdateWrapper<>();
+        //补充： eq 等于  ge 大于等于 gt大于 lt小于 le 小于等于 。。。。
+        roleUpdateWrapper.set("is_deleted",false);
+        roleUpdateWrapper.eq("is_deleted",true);
+        //交由 SysRoleMapper执行
+        int result = sysRoleMapper.update(null,roleUpdateWrapper);
+        System.out.println("影响的行数："+result);
     }
 }
