@@ -3,6 +3,7 @@ package org.example.system.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.example.model.system.SysOperLog;
 import org.example.model.vo.SysOperLogQueryVo;
 import org.example.system.mapper.SysOperLogMapper;
@@ -16,7 +17,7 @@ import org.springframework.util.StringUtils;
  * Created by 27 on 2023/10/3
  */
 @Service
-public class AsyncOperLogServiceImpl implements SysOperLogService {
+public class AsyncOperLogServiceImpl extends ServiceImpl<SysOperLogMapper,SysOperLog> implements SysOperLogService {
 
     @Autowired
     private SysOperLogMapper operLogMapper;
