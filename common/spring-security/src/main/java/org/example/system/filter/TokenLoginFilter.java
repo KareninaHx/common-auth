@@ -1,19 +1,23 @@
 package org.example.system.filter;
 
+import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.common.result.Result;
 import org.example.common.result.ResultCodeEnum;
+import org.example.common.utils.IpUtil;
 import org.example.common.utils.JwtHelper;
 import org.example.common.utils.ResponseUtil;
 import org.example.model.vo.LoginVo;
 import org.example.system.custom.CustomUser;
+import org.example.system.service.LoginLogService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -29,16 +33,24 @@ import java.util.Map;
  * <p>
  * 登录过滤器，继承UsernamePasswordAuthenticationFilter，对用户名密码进行登录校验
  * </p>
+ * 登录成功我们将权限数据保存到redis
  *
  */
 public class TokenLoginFilter extends UsernamePasswordAuthenticationFilter {
 
+
+    private RedisTemplate redisTemplate;
+
+    private LoginLogService loginLogService;
+
     //构造方法
-    public TokenLoginFilter(AuthenticationManager authenticationManager) {
+    public TokenLoginFilter(AuthenticationManager authenticationManager,RedisTemplate redisTemplate,LoginLogService loginLogService) {
         this.setAuthenticationManager(authenticationManager);
         this.setPostOnly(false);
         //指定登录接口及提交方式，可以指定任意路径
         this.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("/admin/system/index/login","POST"));
+        this.redisTemplate = redisTemplate;
+        this.loginLogService = loginLogService;
     }
 
     /**
@@ -78,6 +90,11 @@ public class TokenLoginFilter extends UsernamePasswordAuthenticationFilter {
                                             Authentication auth) throws IOException, ServletException {
         CustomUser customUser = (CustomUser) auth.getPrincipal();
         String token = JwtHelper.createToken(customUser.getSysUser().getId(), customUser.getSysUser().getUsername());
+        //保存权限数据
+        redisTemplate.opsForValue().set(customUser.getUsername(), JSON.toJSONString(customUser.getAuthorities()));
+
+        //记录日志
+        loginLogService.recordLoginLog(customUser.getUsername(), 1, IpUtil.getIpAddress(request), "登录成功");
 
         Map<String, Object> map = new HashMap<>();
         map.put("token", token);
