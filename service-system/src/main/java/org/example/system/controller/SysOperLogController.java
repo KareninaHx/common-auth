@@ -39,8 +39,7 @@ public class SysOperLogController {
 
             @ApiParam(name = "sysOperLogVo", value = "查询对象", required = false)
             SysOperLogQueryVo sysOperLogQueryVo) {
-        Page<SysOperLog> pageParam = new Page<>(page, limit);
-        IPage<SysOperLog> pageModel = sysOperLogService.selectPage(pageParam, sysOperLogQueryVo);
+        IPage<SysOperLog> pageModel = sysOperLogService.selectPage(page,limit,sysOperLogQueryVo);
         return Result.ok(pageModel);
     }
 

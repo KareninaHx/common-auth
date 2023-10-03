@@ -7,7 +7,8 @@ import org.example.model.system.SysOperLog;
 import org.example.model.vo.SysOperLogQueryVo;
 
 public interface SysOperLogService extends IService<SysOperLog> {
-    IPage<SysOperLog> selectPage(Page<SysOperLog> pageParam,SysOperLogQueryVo sysOperLogQueryVo);
+    //操作日志分页查询
+    IPage<SysOperLog> selectPage(Long page, Long limit, SysOperLogQueryVo sysOperLogQueryVo);
 
     void saveSysLog(SysOperLog sysOperLog);
 }

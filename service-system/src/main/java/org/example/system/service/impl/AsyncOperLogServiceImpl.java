@@ -21,12 +21,10 @@ public class AsyncOperLogServiceImpl extends ServiceImpl<SysOperLogMapper,SysOpe
 
     @Autowired
     private SysOperLogMapper operLogMapper;
-    /*
-    操作日志分页查询
-     */
+    //操作日志分页查询
     @Override
-    public IPage<SysOperLog> selectPage(Page<SysOperLog> pageParam, SysOperLogQueryVo sysOperLogQueryVo) {
-
+    public IPage<SysOperLog> selectPage(Long page, Long limit, SysOperLogQueryVo sysOperLogQueryVo) {
+        Page<SysOperLog> pageParam = new Page<>(page,limit);
         //获取条件值
         String title = sysOperLogQueryVo.getTitle();
         String operName = sysOperLogQueryVo.getOperName();
