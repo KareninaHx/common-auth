@@ -15,6 +15,6 @@ public class AssginRoleVo {
     private String userId;
 
     @ApiModelProperty(value = "角色id列表")
-    private List<String> roleIdList;
+    private List<Long> roleIdList;
 
 }

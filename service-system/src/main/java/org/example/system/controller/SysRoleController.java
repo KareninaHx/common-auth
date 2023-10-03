@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.example.common.result.Result;
 import org.example.model.system.SysRole;
+import org.example.model.vo.AssginRoleVo;
 import org.example.model.vo.SysRoleQueryVo;
 import org.example.system.exception.KareninaException;
 import org.example.system.service.SysRoleService;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by 27 on 2023/9/30
@@ -94,5 +96,19 @@ public class SysRoleController {
         }catch(Exception e) {
             throw new KareninaException(20001,"出现自定义异常");
         }
+    }
+
+    @ApiOperation(value = "根据用户获取角色数据")
+    @GetMapping("/toAssign/{userId}")
+    public Result toAssign(@PathVariable Long userId) {
+        Map<String, Object> roleMap = sysRoleService.getRolesByUserId(userId);
+        return Result.ok(roleMap);
+    }
+
+    @ApiOperation(value = "根据用户分配角色")
+    @PostMapping("/doAssign")
+    public Result doAssign(@RequestBody AssginRoleVo assginRoleVo) {
+        sysRoleService.doAssign(assginRoleVo);
+        return Result.ok();
     }
 }

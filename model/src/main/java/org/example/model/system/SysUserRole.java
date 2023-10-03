@@ -16,7 +16,7 @@ public class SysUserRole extends BaseEntity {
 
 	@ApiModelProperty(value = "角色id")
 	@TableField("role_id")
-	private String roleId;
+	private Long roleId;
 
 	@ApiModelProperty(value = "用户id")
 	@TableField("user_id")

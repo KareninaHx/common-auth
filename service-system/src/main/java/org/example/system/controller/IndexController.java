@@ -3,11 +3,17 @@ package org.example.system.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.example.common.result.Result;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.example.common.result.ResultCodeEnum;
+import org.example.common.utils.JwtHelper;
+import org.example.common.utils.MD5;
+import org.example.model.system.SysUser;
+import org.example.model.vo.LoginVo;
+import org.example.system.exception.KareninaException;
+import org.example.system.service.SysUserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,24 +30,43 @@ import java.util.Map;
 @RequestMapping("/admin/system/index")
 public class IndexController {
 
-    //用户login
-    @ApiOperation(value = "用户登录")
+    @Autowired
+    private SysUserService sysUserService;
+
+    ////用户login
+    //@ApiOperation(value = "用户登录")
+    //@PostMapping("/login")
+    ////code:20000,data:{token:"admin"}
+    //public Result userLogin(){
+    //    Map<String,Object> map = new HashMap<>();
+    //    map.put("token","admin-token");
+    //    return Result.ok("map");
+    //}
+    @ApiOperation(value = "登录")
     @PostMapping("/login")
-    //code:20000,data:{token:"admin"}
-    public Result userLogin(){
-        Map<String,Object> map = new HashMap<>();
-        map.put("token","admin-token");
-        return Result.ok("map");
+    public Result login(@RequestBody LoginVo loginVo) {
+        SysUser sysUser = sysUserService.getByUsername(loginVo.getUsername());
+        if(null == sysUser) {
+            throw new KareninaException(ResultCodeEnum.ACCOUNT_ERROR);
+        }
+        if(!MD5.encrypt(loginVo.getPassword()).equals(sysUser.getPassword())) {
+            throw new KareninaException(ResultCodeEnum.PASSWORD_ERROR);
+        }
+        if(sysUser.getStatus().intValue() == 0) {
+            throw new KareninaException(ResultCodeEnum.ACCOUNT_STOP);
+        }
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("token", JwtHelper.createToken(sysUser.getId(), sysUser.getUsername()));
+        return Result.ok(map);
     }
 
     //获取用户信息 info
-    @ApiOperation(value="获取用户信息")
+    @ApiOperation(value = "获取用户信息")
     @GetMapping("/info")
-    public Result userInfo(){
-        Map<String, Object> map = new HashMap<>();
-        map.put("roles","[admin]");
-        map.put("name","admin");
-        map.put("avatar","https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif");
+    public Result info(HttpServletRequest request) {
+        String username = JwtHelper.getUsername(request.getHeader("token"));
+        Map<String, Object> map = sysUserService.getUserInfo(username);
         return Result.ok(map);
     }
 

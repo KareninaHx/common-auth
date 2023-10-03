@@ -3,7 +3,6 @@ package org.example.system;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.example.model.system.SysRole;
 import org.example.system.service.SysRoleService;
-import org.example.system.service.impl.SysRoleServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -69,5 +68,11 @@ public class SysRoleServiceTest {
         queryWrapper.ge("role_code", "role");
         List<SysRole> users = sysRoleService.list(queryWrapper);
         System.out.println(users);
+    }
+
+    @Test
+    //测试根据用户id查询出该用户所拥有的角色
+    public void testGetRoleByUserId(){
+
     }
 }

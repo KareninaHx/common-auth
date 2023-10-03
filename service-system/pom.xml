@@ -19,6 +19,13 @@
     <packaging>jar</packaging>
 
     <dependencies>
+        <!--引入spring-security模块-->
+        <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>spring-security</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
         <dependency>
             <groupId>org.example</groupId>
             <artifactId>service-util</artifactId>
